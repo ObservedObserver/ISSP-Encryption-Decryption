@@ -12,6 +12,13 @@
           <el-input type="textarea" v-model="form.plainText"></el-input>
         </el-form-item>
       </el-form>
+      <div class="table-container">
+        <table class="trans-table">
+          <tr v-for="(row, i) in encryptTable" :key="i">
+            <td v-for="(item, j) in row" :key="j">{{item}}</td>
+          </tr>
+        </table>
+      </div>
       <h4>{{showInfo.transTitle}}</h4>
       <p>{{encryptText}}</p>
     </div>
@@ -70,7 +77,7 @@ export default {
         return 'WRONG_TYPE_KEY'
       }
     },
-    encryptText () {
+    encryptMatrix () {
       if (this.encryptKey === 'WRONG_TYPE_KEY') {
         return this.encryptKey
       }
@@ -83,20 +90,44 @@ export default {
         }
       }
       let plainText = this.form.plainText
-      console.log(ans, key)
       for (let i = 0; i < plainText.length; i++) {
         ans[i % key].push(plainText[i])
       }
+      return ans
+    },
+    encryptText () {
+      if (this.encryptKey === 'WRONG_TYPE_KEY') {
+        return this.encryptKey
+      }
+      let ans = this.encryptMatrix
       return ans.map(row => {
         return row.filter(char => {
           return char !== BLANK_BLOCK
         }).join('')
       }).join('')
+    },
+    encryptTable () {
+      if (this.encryptKey === 'WRONG_TYPE_KEY') {
+        return []
+      }
+      let matrix = this.encryptMatrix
+      return matrix.map(row => {
+        return row.map(char => {
+          return char === BLANK_BLOCK ? ' ' : char
+        })
+      })
     }
   }
 }
 </script>
 
 <style>
-
+.table-container{
+  width: 100%;
+  overflow: auto;
+}
+.trans-table > tr > td{
+  padding: 10px;
+  border: 1px solid #aaa;
+}
 </style>

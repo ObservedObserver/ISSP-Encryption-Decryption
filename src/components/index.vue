@@ -25,9 +25,7 @@
           </el-menu>
         </el-aside>
         <el-main>
-          <substitution v-if="currentAlg === '1' " />
-          <transposition v-if="currentAlg === '2' " />
-          <product v-if="currentAlg === '3' " />
+          <ciphers :method="currentAlg" />
         </el-main>
       </el-container>
     </el-container>
@@ -35,9 +33,7 @@
 </template>
 
 <script>
-import substitution from './ciphers/substitution/index.vue'
-import transposition from './ciphers/transposition/index.vue'
-import product from './ciphers/product/index.vue'
+import ciphers from './ciphers/index.vue'
 export default {
   name: 'app-index',
   data () {
@@ -56,9 +52,7 @@ export default {
     }
   },
   components: {
-    substitution,
-    transposition,
-    product
+    ciphers
   }
 }
 </script>

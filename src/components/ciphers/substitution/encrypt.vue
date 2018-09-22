@@ -12,6 +12,10 @@
           <el-input type="textarea" v-model="form.plainText"></el-input>
         </el-form-item>
       </el-form>
+      <el-table :data="encryptTable" height="250" border>
+        <el-table-column prop="origin" label="origin charactor"></el-table-column>
+        <el-table-column prop="trans" label="trans charactor"></el-table-column>
+      </el-table>
       <h4>{{showInfo.transTitle}}</h4>
       <p>{{encryptText}}</p>
     </div>
@@ -60,7 +64,7 @@ export default {
   computed: {
     encryptKey () {
       if (!isNaN(parseInt(this.form.key))) {
-        if (this.$props.mode === 'decrypt') {
+        if (this.$props.mode === 'encrypt') {
           return parseInt(this.form.key)
         } else {
           return -parseInt(this.form.key)
@@ -68,6 +72,22 @@ export default {
       } else {
         return 'WRONG_TYPE_KEY'
       }
+    },
+    encryptTable () {
+      if (this.encryptKey === 'WRONG_TYPE_KEY') {
+        return []
+      }
+      let key = this.encryptKey
+      let Acode = 'A'.charCodeAt()
+      let Zcode = 'Z'.charCodeAt()
+      let ans = []
+      for (let i = Acode; i <= Zcode; i++) {
+        ans.push({
+          origin: String.fromCharCode(i),
+          trans: String.fromCharCode((i - Acode + key + 26) % 26 + Acode)
+        })
+      }
+      return ans
     },
     encryptText () {
       if (this.encryptKey === 'WRONG_TYPE_KEY') {
@@ -87,7 +107,6 @@ export default {
           ans += plainText[i]
         }
       }
-      console.log(ans)
       return ans
     }
   }
