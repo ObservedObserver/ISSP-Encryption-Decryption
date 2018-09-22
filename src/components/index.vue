@@ -14,6 +14,7 @@
       <el-container style="padding: 1rem 2rem">
         <el-aside width="260px">
           <el-menu class="el-menu-vertical-demo"
+            @select="handleSelect"
             :default-active="leftMenu[0].value"
             text-color="#545c64"
             active-text-color="#ffd04b">
@@ -24,7 +25,8 @@
           </el-menu>
         </el-aside>
         <el-main>
-          <substitution />
+          <substitution v-if="currentAlg === '1' " />
+          <transposition v-if="currentAlg === '2' " />
         </el-main>
       </el-container>
     </el-container>
@@ -33,10 +35,12 @@
 
 <script>
 import substitution from './ciphers/substitution/index.vue'
+import transposition from './ciphers/transposition/index.vue'
 export default {
   name: 'app-index',
   data () {
     return {
+      currentAlg: '1',
       leftMenu: [
         {label: 'Substitution Ciphers', value: '1'},
         {label: 'Transposition Ciphers', value: '2'},
@@ -44,8 +48,14 @@ export default {
       ]
     }
   },
+  methods: {
+    handleSelect (index) {
+      this.currentAlg = index
+    }
+  },
   components: {
-    substitution
+    substitution,
+    transposition
   }
 }
 </script>

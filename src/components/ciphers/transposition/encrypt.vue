@@ -19,8 +19,9 @@
 </template>
 
 <script>
+const BLANK_BLOCK = '-null-'
 export default {
-  name: 'substitution-encript',
+  name: 'transposition-encrypt',
   props: {
     mode: {
       type: String,
@@ -30,27 +31,27 @@ export default {
   data () {
     return {
       form: {
-        key: 0,
+        key: '1',
         plainText: ''
       },
       showInfo: {
-        title: 'Substitution Encryption',
+        title: 'Transposition Encryption',
         originTitle: 'Plain Text',
         transTitle: 'Encrypt Text'
       }
-    } 
+    }
   },
   watch: {
     mode (val) {
       if (val === 'encrypt') {
         this.showInfo = {
-          title: 'Substitution Encryption',
+          title: 'Transposition Encryption',
           originTitle: 'Plain Text',
           transTitle: 'Encrypt Text'
         }
       } else {
         this.showInfo = {
-          title: 'Substitution Decryption',
+          title: 'Transposition Decryption',
           originTitle: 'Encrypt Text',
           transTitle: 'Plain Text'
         }
@@ -60,10 +61,10 @@ export default {
   computed: {
     encryptKey () {
       if (!isNaN(parseInt(this.form.key))) {
-        if (this.$props.mode === 'decrypt') {
+        if (this.$props.mode === 'encrypt') {
           return parseInt(this.form.key)
         } else {
-          return -parseInt(this.form.key)
+          return Math.ceil(this.form.plainText.length / parseInt(this.form.key))
         }
       } else {
         return 'WRONG_TYPE_KEY'
@@ -74,21 +75,23 @@ export default {
         return this.encryptKey
       }
       let key = this.encryptKey
-      let ans = ''
-      let plainText = this.form.plainText
-      for (let i = 0; i < plainText.length; i++) {
-        if (/[A-Z]/.test(plainText[i])) {
-          let ascii = (plainText[i].charCodeAt() - 'A'.charCodeAt() + key + 26) %26 + 'A'.charCodeAt()
-          ans += String.fromCharCode(ascii)
-        } else if (/[a-z]/.test(plainText[i])) {
-          let ascii = (plainText[i].charCodeAt() - 'a'.charCodeAt() + key + 26) %26 + 'a'.charCodeAt()
-          ans += String.fromCharCode(ascii)
-        } else {
-          ans += plainText[i]
+      let ans = []
+      for (let i = 0; i < key; i++) {
+        ans.push([])
+        for (let j = 0; j < i; j++) {
+          ans[i].push(BLANK_BLOCK)
         }
       }
-      console.log(ans)
-      return ans
+      let plainText = this.form.plainText
+      console.log(ans, key)
+      for (let i = 0; i < plainText.length; i++) {
+        ans[i % key].push(plainText[i])
+      }
+      return ans.map(row => {
+        return row.filter(char => {
+          return char !== BLANK_BLOCK
+        }).join('')
+      }).join('')
     }
   }
 }
