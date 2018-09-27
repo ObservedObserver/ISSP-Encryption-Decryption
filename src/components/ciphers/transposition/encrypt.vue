@@ -26,6 +26,7 @@
 </template>
 
 <script>
+import {transpose} from './transpose.js'
 const BLANK_BLOCK = '-null-'
 export default {
   name: 'transposition-encrypt',
@@ -71,7 +72,8 @@ export default {
         if (this.$props.mode === 'encrypt') {
           return parseInt(this.form.key)
         } else {
-          return Math.ceil(this.form.plainText.length / parseInt(this.form.key))
+          return parseInt(this.form.key)
+          // return Math.ceil(this.form.plainText.length / parseInt(this.form.key))
         }
       } else {
         return 'WRONG_TYPE_KEY'
@@ -83,15 +85,36 @@ export default {
       }
       let key = this.encryptKey
       let ans = []
-      for (let i = 0; i < key; i++) {
-        ans.push([])
-        for (let j = 0; j < i; j++) {
-          ans[i].push(BLANK_BLOCK)
-        }
-      }
       let plainText = this.form.plainText
-      for (let i = 0; i < plainText.length; i++) {
-        ans[i % key].push(plainText[i])
+      if (this.$props.mode === 'encrypt') {
+        for (let i = 0; i < key; i++) {
+          ans.push([])
+          for (let j = 0; j < i; j++) {
+            ans[i].push(BLANK_BLOCK)
+          }
+        }
+        for (let i = 0; i < plainText.length; i++) {
+          ans[i % key].push(plainText[i])
+        }
+      } else {
+        let leftNum = this.form.plainText.length % parseInt(this.form.key)
+        let pos = 0
+        let ans0 = []
+        for (let i = 0; i < key; i++) {
+          ans0.push([])
+        }
+        for (let i = 0; i < key; i++) {
+          let rowLen = 0
+          if (i < leftNum) {
+            rowLen = Math.ceil(this.form.plainText.length / parseInt(this.form.key))
+          } else {
+            rowLen = Math.floor(this.form.plainText.length / parseInt(this.form.key))
+          }
+          for (let j = 0; j < rowLen; j++) {
+            ans0[i].push(plainText[pos++])
+          }
+        }
+        ans = transpose(ans0)
       }
       return ans
     },
